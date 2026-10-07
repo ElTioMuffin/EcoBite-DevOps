@@ -1,0 +1,49 @@
+{% load static %}
+<link rel="stylesheet" href={% static "css/main.css" %}>
+<!-- Header -->
+<div class="mt-4 row align-items-center justify-content-end" >
+    <img class="col-1 me-5" src={% static 'images/main/logo.svg' %} style="width: 100px">
+    <p class="col-1 align-self-center">EcoBite</p>
+    <div class="col-4 ms-2"></div>
+    <div class="col-3 me-2 text-end"></div>
+    <div class="col-2"></div>
+</div>
+<div class="container text-center">
+    <div class="alert alert-info display-4 mt-2">Registro</div>
+    <div class="col">
+        <form method="POST" enctype="multipart/form-data">
+            <table class="table container">
+            {{ form.non_field_errors }}
+            {% csrf_token %}
+            {% for field in form %}
+                {%if field.name != "termsofservice"%}
+                <div class="form-floating my-2 fieldWrapper">
+                {{ field }}
+                <label for="{{ field.id_for_label }}">{{ field.label_tag}}</label>
+                <div>{{ field.errors }}</div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                <div class="text-start">
+                <div class="form-check mb-3">
+                    <input type="checkbox" 
+                        class="form-check-input" 
+                        name="termsofservice" 
+                        id="id_termsofservice"
+                        required>
+                    <label class="form-check-label" for="id_termsofservice">
+                        Acepto los <a href="{% url "terms" %}">términos y condiciones</a>
+                    </label>
+                    {% if form.termsofservice.errors %}
+                        <div class="text-danger small mt-1">
+                            {{ form.termsofservice.errors.0 }}
+                        </div>
+                    {% endif %}
+                </div>
+                </div>
+            
+            </table>
+            <button type="submit" class="btn btn-success">Registrarse</button>
+        </form>
+    </div>
+</div>
