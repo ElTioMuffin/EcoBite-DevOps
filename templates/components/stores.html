@@ -1,0 +1,21 @@
+{% load static %}
+
+<div class="card mb-2 shadow-sm rounded col-4" style=";">
+  <!-- Logo Image -->
+  {% if store.logo %}
+    <img src=".{{ store.logo.url }}" class="card-img-top rounded-circle mt-2 mx-auto d-block" alt="{{ store.name }} Logo" style="width: 100px; height: 100px; object-fit: cover;">
+  {% else %}
+    <div class="card">
+      <title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image cap</text>s
+    </div>
+  {% endif %}
+
+  <div class="card-body">
+    <h5 class="card-title text-center text-primary">{{ store.name }}</h5>
+    <p class="card-text text-center">{{ store.address }}</p>
+    <div class="d-flex gap-2 justify-content-center">
+      <a href="{% url "EditStore" store.id %}" class="btn btn-outline-primary btn-sm">Editar</a>
+      <a href="{% url "DeleteStore" store.id %}" class="btn btn-outline-danger btn-sm">Eliminar</a>
+    </div>
+  </div>
+</div>
