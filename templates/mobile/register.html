@@ -1,0 +1,41 @@
+{% load static %}
+<link rel="stylesheet" href={% static "css/main.css" %}>
+<!-- Header -->
+<div class="mx-1 mt-4 container row align-items-center text-center" >
+    <div class="col text-end"></div>
+    <a href="{% url "Main" %}">
+        <img class="col-2" src={% static 'images/main/logo.svg' %} style="width: 100px">
+    </a>
+    <div class="col text-end"></div>
+</div>
+
+<nav class="container">
+    <div class="alert text-center alert-info display-4 mt-2">Registro</div>
+    <div class="nav nav-tabs justify-content-center" id="nav-tab1" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-users" type="button" role="tab" aria-controls="nav-users" aria-selected="true">Usuarios</button>
+    </div>
+    <div class="tab-content " id="nav-tabContent">
+        <!-- Register Users -->
+        <div class="tab-pane fade show active" id="nav-users" role="tabpanel" aria-labeledby="nav-logusers" tab-index="0">
+            <div class="container text-center">
+                <div class="col">
+                    <form method="POST" enctype="multipart/form-data">
+                        <table class="table container">
+                        {{ form.non_field_errors }}
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-floating my-2 fieldWrapper">
+                            {{ field }}
+                            <label for="{{ field.id_for_label }}">{{ field.label_tag}}</label>
+                            <div>{{ field.errors }}</div>
+                            </div>
+                        {% endfor %}
+                        </table>
+                        <button type="submit" class="btn btn-success" name="user-form">Registrarse</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- Login -->
