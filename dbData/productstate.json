@@ -1,0 +1,43 @@
+[
+    {
+      "model": "Store.productstate",
+      "pk": 1,
+      "fields": {
+        "name": "Abierto",
+        "description": "El envase ha sido abierto y el producto está en uso"
+      }
+    },
+    {
+      "model": "Store.productstate",
+      "pk": 2,
+      "fields": {
+        "name": "A punto de expirar",
+        "description": "El producto está dentro del período cercano a su fecha de expiración"
+      }
+    },
+    {
+      "model": "Store.productstate",
+      "pk": 3,
+      "fields": {
+        "name": "Cerrado",
+        "description": "El producto está sellado y sin uso"
+      }
+    },
+    {
+      "model": "Store.productstate",
+      "pk": 4,
+      "fields": {
+        "name": "En buen estado",
+        "description": "El producto está apto para consumo sin signos de deterioro"
+      }
+    },
+    {
+      "model": "Store.productstate",
+      "pk": 5,
+      "fields": {
+        "name": "Deteriorado",
+        "description": "El producto presenta signos de daño o mala conservación"
+      }
+    }
+  ]
+  
