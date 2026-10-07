@@ -1,0 +1,64 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url "Main" %}">
+            <img src="{% static 'images/main/logo.svg' %}" alt="EcoBite" width="50" class="me-2">
+            <span class="fw-bold">EcoBite</span>
+        </a>
+
+        <!-- Mobile controls (QR, Cart, Toggle) -->
+        <div class="d-flex gap-2 align-items-center d-lg-none">
+            <!-- QR Button (mobile only, usertype 2 only) -->
+
+            <!-- Cart Button (mobile only, customers only) -->
+            {% if user.usertype_id == 1 %}
+                <a class="btn btn-outline-dark" href="{% url "CartDetails" %}">
+                    <i class="bi-cart-fill me-1"></i>
+                    <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart-quantity-mobile">
+                        {{ cart|length }}
+                    </span>
+                </a>
+            {% endif %}
+
+            <!-- Hamburger Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav" aria-controls="navbarNav" 
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <!-- Collapsible Menu -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <!-- Cart Button (desktop only, customers only) -->
+                {% if user.usertype_id == 1 %}
+                    <li class="nav-item d-none d-lg-block">
+                        <a class="btn btn-outline-dark me-2" href="{% url "CartDetails" %}">
+                            <i class="bi-cart-fill me-1"></i>
+                            Carrito
+                            <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart-quantity-desktop">
+                                {{ cart|length }}
+                            </span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                <!-- Navigation Links -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "Landing" %}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "UpdateUser" user.id %}">Mi Perfil</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url "Orders" %}">Mis Pedidos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{% url 'deauth' %}">Cerrar sesión</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
