@@ -64,3 +64,6 @@ jobs:
           DEBUG: "True"
           DATABASE_URL: postgis://ecobite:ecobite@127.0.0.1:5432/ecobite
         run: python manage.py test
+
+      - name: Build Docker image
+        run: docker build -t ecobite:ci .
