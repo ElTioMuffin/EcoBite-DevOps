@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "feature/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_DB: ecobite
+          POSTGRES_USER: ecobite
+          POSTGRES_PASSWORD: ecobite
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ecobite -d ecobite"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GeoDjango system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin libgdal-dev libgeos-dev libproj-dev
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Django checks
+        env:
+          SECRET_KEY: ci-secret-key
+          DEBUG: "True"
+          DATABASE_URL: postgis://ecobite:ecobite@127.0.0.1:5432/ecobite
+        run: python manage.py check
+
+      - name: Run migrations
+        env:
+          SECRET_KEY: ci-secret-key
+          DEBUG: "True"
+          DATABASE_URL: postgis://ecobite:ecobite@127.0.0.1:5432/ecobite
+        run: python manage.py migrate --noinput
+
+      - name: Run tests
+        env:
+          SECRET_KEY: ci-secret-key
+          DEBUG: "True"
+          DATABASE_URL: postgis://ecobite:ecobite@127.0.0.1:5432/ecobite
+        run: python manage.py test
