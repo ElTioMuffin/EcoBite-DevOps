@@ -1,0 +1,156 @@
+<div class="container mt-5">
+    <h2>Checkout</h2>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h4>Información de Pago (DEMO)</h4>
+                    <form method="post" action="{% url "ProcessPayment" %}" id="paymentForm">
+                        {% csrf_token %}
+                        
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Modo de Demostración</strong><br>
+                            Usa una de las tarjetas de prueba para simular diferentes escenarios de pago.
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Número de Tarjeta *</label>
+                            <input type="text" name="card_number" id="cardNumber" 
+                                   class="form-control" placeholder="4242 4242 4242 4242" 
+                                   maxlength="19" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Fecha de Vencimiento *</label>
+                                <input type="text" name="expiry" class="form-control" 
+                                       placeholder="MM/YY" maxlength="5" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CVV *</label>
+                                <input type="text" name="cvv" class="form-control" 
+                                       placeholder="123" maxlength="4" required>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success btn-lg w-100 mt-3" id="payButton">
+                                <i class="bi bi-credit-card"></i> Pagar ${{ total|floatformat:0 }}
+                            </button>
+                            <a href="{% url "CartDetails" %}" class="btn btn-danger btn-lg w-100 mt-3" id="cancelButton">
+                                <i class="bi bi-window-x"></i></i> Cancelar
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Test Cards Reference -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-credit-card"></i> Tarjetas de Prueba</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Usa estas tarjetas para probar diferentes escenarios:</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Número de Tarjeta</th>
+                                    <th>Escenario</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for card in test_cards %}
+                                <tr>
+                                    <td><code>{{ card.number }}</code></td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if card.scenario == 'success' %}bg-success
+                                            {% elif card.scenario == 'declined' %}bg-danger
+                                            {% elif card.scenario == 'insufficient_funds' %}bg-warning text-dark
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ card.get_scenario_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-outline-primary use-card" 
+                                                data-number="{{ card.number }}"
+                                                data-expiry="{{ card.expirydate }}"
+                                                data-cvv="{{ card.cvv }}">
+                                            Usar
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Resumen del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in cart_products %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>{{ item.name }} <small class="text-muted">x{{ item.quantity_in_cart }}</small></span>
+                        <span>${{ item.price|floatformat:0 }}</span>
+                    </div>
+                    {% endfor %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Comisión <small class="text-muted"></small></span>
+                        <span>$600</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong class="text-success">${{ total|floatformat:0 }}</strong>
+                    </div>
+                </div>
+            </div>
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-fill card details
+document.querySelectorAll('.use-card').forEach(button => {
+    button.addEventListener('click', function() {
+        document.getElementById('cardNumber').value = this.dataset.number;
+        document.querySelector('input[name="expiry"]').value = this.dataset.expiry;
+        document.querySelector('input[name="cvv"]').value = this.dataset.cvv;
+    });
+});
+
+// Format card number
+document.getElementById('cardNumber').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '');
+    let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+    e.target.value = formattedValue;
+});
+
+// Show loading
+document.getElementById('paymentForm').addEventListener('submit', function() {
+    const button = document.getElementById('payButton');
+    const originalHTML = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Procesando...';
+     setTimeout(() => {
+        button.disabled = false;
+        button.innerHTML = originalHTML;
+    }, 3000);
+    
+});
+</script>
