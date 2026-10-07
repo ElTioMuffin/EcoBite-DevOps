@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 
 from django.contrib import admin
 from django.urls import path,re_path,include
+from django.http import JsonResponse
 import Login.views as Login
 import Store.views as Store
 from Store.views import newProduct
