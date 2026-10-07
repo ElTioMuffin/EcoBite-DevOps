@@ -1,0 +1,43 @@
+<div class="container mt-4">
+    <h2 class="mb-4">Selecciona una tienda</h2>
+    <div class="text-start">
+        <a class="btn btn-outline-success justify-start" href="{% url "Landing" %}">
+            <i class="bi bi-arrow-return-left"> Volver </i>
+        </a>
+    </div>
+    <form method="GET">
+        <div class="row mt-2 gap-2">
+            {% for store in stores %}
+                    {% include "components/selectStore.html" %}
+            {% endfor %}
+        </div>
+        <div class="mt-3 text-center">
+            <button type="submit" class="btn btn-primary">Ver Productos</button>
+        </div>
+    </form>
+    {% if selected_store %}
+        <hr class="my-4">
+
+        <h3 class="mb-3">Productos en "{{ selected_store.name }}"</h3>
+
+        {% if products %}
+            <ul class="list-group">
+            {% for product in products %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ product.name }}
+                        <span class="badge bg-primary">${{ product.price }}
+                        </span>
+                    </span>
+                    <div class="">
+                        <a href="{% url "ProductEdit" product.id %}" class="btn btn-warning"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url "ProductDelete" product.id %}" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted">Esta tienda no tiene productos registrados.</p>
+        {% endif %}
+    {% endif %}
+
+</div>
