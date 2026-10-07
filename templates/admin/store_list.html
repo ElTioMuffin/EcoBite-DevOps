@@ -1,0 +1,91 @@
+{% extends "admin/base_site.html" %}
+
+{% load static %}
+
+
+{% block content %}
+{% include "components/navbar.html" %}
+<div class="container mt-4">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <h2 class="mb-4">Administración de Tiendas</h2>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>RUT</th>
+                <th>Type</th>
+                <th>Dueño</th>
+                <th>User Type</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for s in page_obj %}
+            <tr>
+                <td>{{ s.name }}</td>
+                <td>{{ s.rut }}</td>
+                <td>{{ s.storetype.name }}</td>
+                <td>{{ s.owner.email }}</td>
+                <td>{{ s.owner.usertype.name }}</td>
+
+                <td>
+                    <a href="{% url 'EditStore' s.id %}" 
+                       class="btn btn-primary btn-sm">
+                        Editar
+                    </a>
+
+                    {% if s.owner.usertype.id != 99 %}
+                        <!-- Disable button -->
+                        <a href="{% url 'store_disable' s.id %}" 
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Desactivar esta tienda?');">
+                           Desactivar
+                        </a>
+                    {% else %}
+                        <!-- Enable button -->
+                        <a href="{% url 'store_enable' s.id %}" 
+                           class="btn btn-success btn-sm">
+                           Activar
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- PAGINATION -->
+    <nav aria-label="Page navigation" class="mt-3">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    Anterior
+                </a>
+            </li>
+            {% endif %}
+
+            <li class="page-item active">
+                <span class="page-link">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                </span>
+            </li>
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    Siguiente
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+</div>
+{% endblock %}
