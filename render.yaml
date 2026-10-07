@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ecobite-devops
+    runtime: docker
+    plan: free
+    branch: main
+    autoDeployTrigger: checksPass
+    healthCheckPath: /
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    preDeployCommand: python manage.py migrate --noinput
+    envVars:
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        sync: false
