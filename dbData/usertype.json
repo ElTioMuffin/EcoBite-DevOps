@@ -1,0 +1,26 @@
+[
+    {
+        "model": "Login.usertype",
+        "pk": 1,
+        "fields": {
+            "name": "Usuario",
+            "desc": "Usuario Normal"
+        }
+    },
+    {
+        "model": "Login.usertype",
+        "pk": 2,
+        "fields": {
+            "name": "Dueño",
+            "desc": "Dueño de Comercios"
+        }
+    },
+    {
+        "model": "Login.usertype",
+        "pk": 3,
+        "fields": {
+            "name": "Admin",
+            "desc": "Admin"
+        }
+    }
+]
