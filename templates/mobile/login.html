@@ -1,0 +1,28 @@
+{% load static %}
+<link rel="stylesheet" href={% static "css/main.css" %}>
+<!-- Header -->
+<div class="mx-1 mt-4 container row align-items-center text-center" >
+    <div class="col text-end"></div>
+    <a href="{% url "Main" %}">
+        <img class="col-2" src={% static 'images/main/logo.svg' %} style="width: 100px">
+    </a>
+    <div class="col text-end"></div>
+</div>
+
+<div class="container text-center">
+    <div class="alert alert-info display-4 mt-2">Login Usuarios</div>
+        <form method="POST" enctype="multipart/form-data" action="{% url "auth" %}">
+            <table class="table container">
+            {{ form.non_field_errors }}
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-floating my-2 fieldWrapper">
+                {{ field }}
+                <label for="{{ field.id_for_label }}">{{ field.label_tag}}</label>
+                <div>{{ field.errors }}</div>
+                </div>
+            {% endfor %}
+            </table>
+            <button type="submit" class="btn btn-success">Ingresar</button>
+        </form>
+    </div>
