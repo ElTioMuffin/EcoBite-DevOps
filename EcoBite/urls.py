@@ -3,16 +3,13 @@ URL configuration for EcoBite project.
 
 The `urlpatterns` list routes URLs to Store. For more information please see:
     https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
+Examples
 Function Store
     1. Add an import:  from my_app import Store
     2. Add a URL to urlpatterns:  path('', Store.home, name='home')
 Class-based Store
     1. Add an import:  from other_app.Store import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+    2. Add a URL to urlpatterns:  path('', Home.as_view())
 """
 from django.conf import settings
 from django.conf.urls.static import static
@@ -26,7 +23,11 @@ from Store.views import newProduct
 import cart.views as Cart
 
 def health_check(request):
-    return JsonResponse({"status": "ok"})
+    return JsonResponse({
+        "status": "ok",
+        "service": "EcoBite",
+        "version": "1.1.0",
+    })
 
 
 urlpatterns = [
@@ -66,13 +67,13 @@ urlpatterns = [
     path('processPayment/',Cart.processPayment,name="ProcessPayment"),
     path('paymentfailed/<uuid:order_id>',Cart.payment_failed,name="PaymentFailed"),
     path('checkout/success/<uuid:order_id>',Cart.payment_success,name="PaymentSuccess"),
-
+    
     #OrderProccess
     path('order/<uuid:order_id>',Cart.viewOrder,name="Order"),
     path('user/order/<uuid:order_id>',Cart.userOrder,name="UserOrder"),
     path('user/order/list',Cart.orderList,name="Orders"),
     path('order/pickup/<uuid:order_id>/<int:item_id>',Cart.confirmPickup,name="PickUp"),
-
+    
     #Api 
     path('location/update',Login.updateLocation ,name="locationUpdate"),
 
