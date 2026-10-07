@@ -8,7 +8,6 @@ services:
     healthCheckPath: /health/
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    preDeployCommand: python manage.py migrate --noinput
     envVars:
       - key: SECRET_KEY
         sync: false
