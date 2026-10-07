@@ -1,0 +1,15 @@
+{% load static %}
+
+<div class="card card-store mb-2 shadow-sm rounded col-4" style=";">
+  <!-- Logo Image -->
+  <img src="{{MEDIA_URL}}{{ store.logo }}" class="card-img-top rounded-circle mt-2 mx-auto d-block" alt="{{ store.name }} Logo" style="width: 100px; height: 100px; object-fit: cover;">
+
+  <div class="card-body">
+    <h5 class="card-title text-center text-primary">{{ store.name }}</h5>
+    <p class="card-text text-center">{{ store.address }}</p>
+    <div class="d-flex justify-content-center">
+        <input type="radio" class="btn-check" name="store" id="{{store.id}}"  value="{{ store.id }}" autocomplete="off" required>
+        <label class="btn btn-outline-primary" for="{{store.id}}">Seleccionar</label>
+    </div>
+  </div>
+</div>
