@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.svg' %}" >
+    <title>EcoBite</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body>    
+     <!-- Order Details -->
+{% include "components/navbar.html" %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6">
+                <i class="bi bi-box-seam"></i> Pedido #{{ order.id|slice:":8" }}
+            </h1>
+            <button 
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal" 
+        data-bs-target="#qrModal">
+        <i class="bi bi-qr-code me-2"></i>
+        Mostrar QR
+      </button>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <!-- Order Info -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Información del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small">Cliente</label>
+                        <p class="mb-0 fw-bold">
+                            {% if order.user %}
+                                {{ order.user.name }}
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">Fecha</label>
+                        <p class="mb-0">{{ order.created_at|date:"d/m/Y H:i" }}</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">Estado de Pago</label>
+                        <p class="mb-0">
+                            {% if order.paymentStatus == 'paid' %}
+                            <span class="badge bg-success">Pagado</span>
+                            {% elif order.paymentStatus == 'pending' %}
+                            <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif order.paymentStatus == 'failed' %}
+                            <span class="badge bg-danger">Fallido</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Cancelado</span>
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-muted small">Método de Pago</label>
+                        <p class="mb-0">{{ order.paymentMethod }}</p>
+                    </div>
+
+                    {% if order.paymentScenario %}
+                    <div class="mb-3">
+                        <label class="text-muted small">Escenario</label>
+                        <p class="mb-0 small">{{ order.paymentScenario }}</p>
+                    </div>
+                    {% endif %}
+
+                    <hr>
+
+                    <div class="mb-0">
+                        <label class="text-muted small">Total</label>
+                        <p class="mb-0 fs-3 fw-bold text-primary">${{ order.total}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Card -->
+            <div class="card shadow-sm mt-3">
+                <div class="card-body">
+                    <h6 class="mb-3">Progreso de Entrega</h6>
+                    <div class="text-center mb-3">
+                        <div class="display-4 fw-bold text-primary">
+                            {{ picked_count }}/{{ total_count }}
+                        </div>
+                        <p class="text-muted small mb-0">items entregados</p>
+                    </div>
+                    <div class="progress" style="height: 25px;">
+                        {% widthratio picked_count total_count 100 as percentage %}
+                        <div class="progress-bar {% if percentage == 100 %}bg-success{% else %}bg-primary{% endif %}" 
+                             role="progressbar" 
+                             style="width: {{ percentage }}%;" 
+                             aria-valuenow="{{ percentage }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100">
+                            {{ percentage }}%
+                        </div>
+                    </div>
+                    {% if percentage == 100 %}
+                    <div class="alert alert-success mt-3 mb-0" role="alert">
+                        <i class="bi bi-check-circle-fill"></i> <strong>¡Pedido Completo!</strong> Todos los items están entregados.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Products List -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Productos del Pedido</h5>
+                </div>
+                <div class="card-body">
+                    {% if order_items %}
+                        <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-shop"></i> Productos por Tienda 
+                        <span class="badge bg-light text-dark float-end">{{ items_by_store|length }} tienda{{ items_by_store|length|pluralize }}</span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% for store, data in items_by_store.items %}
+                    <div class="mb-4 pb-4 {% if not forloop.last %}border-bottom{% endif %}">
+                        <!-- Store Header -->
+                        <div class="row align-items-center mb-3 bg-light p-3 rounded">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center">
+                                    {% if store.logo %}
+                                    <img src="{{ store.logo.url }}" alt="{{ store.name }}" 
+                                         class="rounded-circle me-3" 
+                                         style="width: 60px; height: 60px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    {% else %}
+                                    <div class="rounded-circle me-3 bg-secondary d-flex align-items-center justify-content-center text-white" 
+                                         style="width: 60px; height: 60px;">
+                                        <i class="bi bi-shop fs-3"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div>
+                                        <h5 class="mb-1">{{ store.name }}</h5>
+                                        <small class="text-muted">
+                                            <i class="bi bi-geo-alt"></i> {{ store.address }}
+                                        </small><br>
+                                        <small class="text-muted">
+                                            <i class="bi bi-telephone"></i> {{ store.phone }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                {% if store.gps %}
+                                <a href="https://www.google.com/maps?q={{ store.gps.y }},{{ store.gps.x }}" 
+                                   target="_blank" 
+                                   class="btn btn-sm btn-outline-primary mt-2">
+                                    <i class="bi bi-geo-alt"></i> Ver en Mapa
+                                </a>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <small class="text-muted">Horario:</small><br>
+                                <strong>{{ store.openhr|time:"H:i" }} - {{ store.closehr|time:"H:i" }}</strong>
+                            </div>
+                        </div>
+                        
+                        <!-- Store Items -->
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50%;">Producto</th>
+                                        <th class="text-center" style="width: 11%;">Cantidad</th>
+                                        <th class="text-end" style="width: 12.9%;">Estado</th>
+                                        <th class="text-end" style="width: 12.9%;">Precio Unit.</th>
+                                        <th class="text-end" style="width: 12.9%;">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in data.items %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                {% if item.product.photo %}
+                                                <img src="{{ item.product.photo.url }}" 
+                                                     alt="{{ item.product.name }}"
+                                                     class="rounded me-3"
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                                {% else %}
+                                                <div class="rounded me-3 bg-light d-flex align-items-center justify-content-center" 
+                                                     style="width: 50px; height: 50px;">
+                                                    <i class="bi bi-image text-muted"></i>
+                                                </div>
+                                                {% endif %}
+                                                <div>
+                                                    <strong>{{ item.product.name }}</strong>
+                                                    {% if item.product.is_sale %}
+                                                    <span class="badge bg-danger ms-2">OFERTA</span>
+                                                    {% endif %}
+                                                    <br>
+                                                    <small class="text-muted">{{ item.product.state.name }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <span class="badge bg-secondary fs-6">{{ item.quantity }}</span>
+                                        </td>
+                                        <td class="text-end align-middle">{% if item.isPicked %}
+                                        <div class="mb-2">
+                                            <p class="text-success fw-bold mb-0">Recibido</p>
+                                        </div>
+                                        {% else %}
+                                        <div class="mb-2">
+                                            <p class="text-warning fw-bold mb-0">Pendiente</p>
+                                        </div>
+                                        {% endif %}</td>
+                                        <td class="text-end align-middle">${{ item.price }}</td>
+                                        <td class="text-end align-middle">
+                                            <strong class="text-primary">${{ item.get_subtotal }}</strong>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="4" class="text-end">
+                                            <strong>Subtotal {{ store.name }}:</strong>
+                                        </td>
+                                        <td class="text-end">
+                                            <strong class="text-primary fs-5">${{ data.total }}</strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> No hay productos en esta orden.
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+
+    <div class="modal fade" id="qrModal" tabindex="-1" role="dialog" aria-labelledby="qrModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrModalLabel">Código QR del Pedido</h5>
+                </div>
+                <div class="modal-body text-center">
+                    {% if qr %}
+                        <img src="data:image/png;base64,{{ qr }}" alt="QR Code" class="img-fluid mb-3" style="max-width: 256px;">
+                    {% else %}
+                        <p class="text-danger">No se pudo generar el código QR</p>
+                    {% endif %}
+                    <p class="text-muted mb-2">Escanea este código para ver el pedido</p>
+                    <p class="font-weight-bold">Pedido #{{ order.id|slice:":8" }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
