@@ -1,0 +1,36 @@
+{% load static %}
+<div class="container text-center">
+    <div class="alert alert-info display-4 mt-2">Agregar Producto</div>
+    <div class="text-start">
+        <a class="btn btn-outline-success justify-start" href="{% url "Landing" %}">
+            <i class="bi bi-arrow-return-left"> Volver </i>
+        </a>
+    </div>
+    <div class="col">
+        <form method="POST" enctype="multipart/form-data">
+            <table class="table container">
+            {{ form.non_field_errors }}
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-floating my-2 fieldWrapper">
+                {{ field }}
+                <label for="{{ field.id_for_label }}">{{ field.label_tag}}</label>
+                <div>{{ field.errors }}</div>
+                </div>
+            {% endfor %}
+            </table>
+            <div class="container text-center">
+                <div class="row mt-2 gx-2">
+                    {% if stores %}
+                        {% for store in stores %}
+                            {% include "components/selectStore.html" %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success">Editar</button>
+        </form>
+    </div>
+</div>
+
+<script src="{% static "js/selectStore.js" %}"></script>
