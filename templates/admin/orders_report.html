@@ -1,0 +1,115 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2 text-primary"></i> Panel de Control
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="dashboardNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'dashboard' %}">
+                            <i class="bi bi-house-door"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'orders_report' %}">
+                            <i class="bi bi-cart-check"></i> Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products_report' %}">
+                            <i class="bi bi-box-seam"></i> Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stores_report' %}">
+                            <i class="bi bi-shop"></i> Tiendas
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Reporte de Pedidos</h1>
+        <a href="{% url "export_orders_csv" %}" class="btn btn-success"><i class="bi bi-filetype-csv"></i>Descargar CSV</a>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label>Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="paid">Pagado</option>
+                        <option value="pending">Pendiente</option>
+                        <option value="failed">Fallido</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Desde</label>
+                    <input type="date" name="date_from" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Hasta</label>
+                    <input type="date" name="date_to" class="form-control">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Tabla de pedidos -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Usuario</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td><code>{{ order.id|truncatechars:13 }}</code></td>
+                            <td>{{ order.user.email|default:"N/A" }}</td>
+                            <td>${{ order.total }}</td>
+                            <td>
+                                {% if order.paymentStatus == 'paid' %}
+                                    <span class="badge bg-success">Pagado</span>
+                                {% elif order.paymentStatus == 'pending' %}
+                                    <span class="badge bg-warning">Pendiente</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Fallido</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No hay pedidos</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

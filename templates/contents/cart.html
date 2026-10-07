@@ -1,0 +1,38 @@
+<div class="container">
+    <h1>Carrito de compras</h1>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+</div>
+<div class="container d-flex justify-content-between align-items-start">
+    <a class="btn btn-outline-success" href="{% url "Landing" %}">
+        <i class="bi bi-arrow-return-left"></i> Volver
+    </a>
+    
+    <div class="text-end">
+        <div class="d-flex gap-2 mb-2">
+            <a class="btn btn-outline-danger" href="{% url "CartClean" %}">
+                <i class="bi bi-cart-x"></i> Vaciar Carrito
+            </a>
+            <a class="btn btn-outline-success" href="{% url "Checkout" %}">
+                <i class="bi bi-cash-stack"></i> Pagar
+            </a>
+        </div>
+        <h4 class="mb-0">Total: ${{ total }}</h4>
+    </div>
+</div>
+<div class="container text-center">
+    <table>
+        <section class="py-5">
+            <div class="container px-4 px-lg-5 mt-5">
+                    {% if cartProducts %}
+                        {% for producto in cartProducts %}
+                            {% include "components/cartProducts.html" %}
+                        {% endfor %}
+                    {% endif %}
+            </div>
+        </section>
+    </table>
+</div>

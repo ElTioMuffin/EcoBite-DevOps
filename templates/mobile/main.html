@@ -1,0 +1,59 @@
+{% load static %}
+<link rel="stylesheet" href={% static "css/mobile/main.css" %}>
+<!-- Header -->
+<div class="mt-4 container row align-items-center justify-content-end" >
+    <img class="col-2" src={% static 'images/main/logo.svg' %} style="width: 100px">
+    <div class="col me-2 text-end">
+        <a class="btn btn-outline-success" href="{% url "Login" %}">Ingreso</a>
+        <a class="btn btn-outline-success" href="{% url "Register" %}">Registrarse</a>
+    </div>
+</div>
+
+<!-- Contenido -->
+<div class="container text-center">
+    <div class="col">
+        <div class="row mt-2">
+            <p class="slogan">¡Ayuda a reducir el desperdicio de alimentos mientras ahorras!</p>
+        </div>
+        <div class="row px-4">
+            <img class="img-fluid  justify-center border border-4 border-dark removePad rounded-5 mx-auto" src="{% static "images/main/landing1.png" %}">
+        </div>
+        <div class="row">
+            <p class="textMain mt-4">
+                Cada día, toneladas de alimentos perfectamente buenos se desperdician simplemente por estar cerca de su fecha de caducidad.
+                Con "EcoBite", buscamos cambiar esto, ofreciendo descuentos de hasta un 70% en productos que puedes disfrutar hoy, mientras contribuyes al cuidado del medio ambiente.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de beneficios -->
+<div class="container mt-5">
+    <div class="row text-center">
+        <h2 class="mb-4">¿Por qué usar EcoBite?</h2>
+
+        <div class="col-md-4">
+            <i class="bi bi-trash2 fs-1"></i>
+            <h5>Reduce el desperdicio</h5>
+            <p>Aprovecha alimentos que aún están en perfecto estado y evita que terminen en la basura.</p>
+        </div>
+
+        <div class="col-md-4">
+            <i class="bi bi-piggy-bank fs-1"></i>
+            <h5>Ahorra dinero</h5>
+            <p>Encuentra productos con descuentos de hasta un 70% todos los días.</p>
+        </div>
+
+        <div class="col-md-4">
+            <i class="bi bi-shop fs-1"></i>
+            <h5>Apoya a tiendas locales</h5>
+            <p>Da una segunda oportunidad a productos cerca del vencimiento y ayuda a los comercios locales.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="mt-5 py-4 text-center" style="background-color: #f5f5f5;">
+    <p class="mb-0">© 2025 EcoBite -- Juntos reducimos el desperdicio</p>
+    <small>Desarrollado con ❤️ para un planeta más sostenible</small>
+</footer>

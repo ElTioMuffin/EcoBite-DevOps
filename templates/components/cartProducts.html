@@ -1,0 +1,99 @@
+<div class="container mt-2">
+  <div class="card mb-3 text-start">
+      <div class="row g-0">
+        <!-- Image: Full width on mobile, 4 cols on larger screens -->
+        {% if producto.photo %}
+            <div class="col-12 col-md-4">
+                <img src="{{ producto.photo.url }}" 
+                    class="img-fluid rounded-start w-100" 
+                    alt="{{ producto.name }}" 
+                    style="max-height: 350px; object-fit: cover;">
+            </div>
+            {% else %}
+                <div class="card">
+                    <svg aria-label="Placeholder: Image cap" style="object-fit:cover;" class="bd-placeholder-img card-img-top" height="180" preserveAspectRatio="xMidYMid slice" role="img" width="100%" xmlns="http://www.w3.org/2000/svg"><title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect><text x="20%" y="50%" fill="#dee2e6" dy=".3em">Imagen de Prueba</text></svg>
+                </div>
+            {% endif %}
+        
+        <!-- Content: Full width on mobile, 8 cols on larger screens -->
+        <div class="col-12 col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">{{producto.name}}</h5>
+            <p class="card-text">{{producto.desc}}</p>
+            <p class="card-text">
+              <small class="text-body-secondary">Fecha de Vencimiento: {{producto.expdate|date:'d-M-Y'}}</small>
+            </p>
+            <p class="card-text">
+              <small class="text-body-secondary">Estado: {{producto.state}}</small>
+            </p>
+            
+            <!-- Price -->
+            {% if producto.is_sale %}
+            <p class="card-text">
+              <small class="text-body-secondary">
+                Precio: <strike>${{ producto.price}}</strike> 
+                <span class="text-success fw-bold">${{ producto.sale_price}}</span>
+              </small>
+            </p>
+            {% else %}
+            <p class="card-text">
+              <small class="text-body-secondary">Precio: <span class="fw-bold">${{producto.price}}</span></small>
+            </p>
+            {% endif %}
+            
+            <!-- Quantity controls -->
+            <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-2 mb-2">
+              <small class="text-body-secondary">Cantidad:</small>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <!-- MINUS BUTTON -->
+                <form method="post" action="{% url 'CartUpdate' producto.id %}" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="quantity" value="{{ producto.quantity_in_cart|add:'-1' }}">
+                  <button type="submit" class="btn btn-sm btn-outline-secondary" 
+                          {% if producto.quantity_in_cart <= 1 %}disabled{% endif %}>
+                    <i class="bi bi-dash"></i>
+                  </button>
+                </form>
+                
+                <!-- MANUAL INPUT FORM -->
+                <form method="post" action="{% url 'CartUpdate' producto.id %}" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="number" name="quantity" value="{{ producto.quantity_in_cart }}" 
+                         min="1" max="{{ producto.quantity }}" 
+                         class="form-control form-control-sm text-center" 
+                         style="width: 60px;"
+                         onchange="this.form.submit()">
+                </form>
+                
+                <!-- PLUS BUTTON -->
+                <form method="post" action="{% url 'CartUpdate' producto.id %}" style="display: inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="quantity" value="{{ producto.quantity_in_cart|add:'1' }}">
+                  <button type="submit" class="btn btn-sm btn-outline-secondary"
+                          {% if producto.quantity_in_cart >= producto.quantity %}disabled{% endif %}>
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </form>
+                
+                <!-- DELETE BUTTON -->
+                <a href="{% url "CartDelete" producto.id %}" class="btn btn-sm btn-danger">
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
+            </div>
+            
+            <p class="card-text">
+              <small class="text-body-secondary">Stock Disponible: {{producto.quantity}}</small>
+            </p>
+            <p class="card-text">
+              <small class="text-body-secondary">
+                <a class="btn btn-sm btn-outline-primary" href="{% url "StorePage" producto.store.id %}">
+                  <i class="bi bi-shop"></i> Tienda: {{producto.store.name}}
+                </a>
+              </small>
+            </p>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>

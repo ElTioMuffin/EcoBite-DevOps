@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guía de Reciclaje - Ecobite</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root{--accent:#2b8a3e}
+    body{background:#f8fafb}
+    .accent{color:var(--accent)}
+    .accent-bg{background:linear-gradient(90deg, #e9f7ec, #f3fff5)}
+    .card-icon{font-size:2.2rem}
+    .legend-dot{width:14px;height:14px;border-radius:50%;display:inline-block;margin-right:8px}
+    pre.code{background:#0f1720;color:#e6eef8;padding:12px;border-radius:6px;overflow:auto}
+    @media (prefers-color-scheme: dark){
+      body{background:#0b1220;color:#e6eef8}
+      .accent-bg{background:linear-gradient(90deg,#06240d,#07280f)}
+    }
+  </style>
+</head>
+<body>
+  <header class="py-4 mb-4 border-bottom bg-white">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div>
+        <h1 class="h4 mb-0 text-dark">Guía de Reciclaje - <span class="text-muted">Ecobite</span></h1>
+        <small class="text-muted">Prácticas y pasos para reciclar alimentos usando la app</small>
+      </div>
+      <div>
+        <button class="btn btn-outline-secondary me-2" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</button>
+        <a class="btn btn-success" href="#contenido"><i class="bi bi-arrow-down-circle"></i> Ir al contenido</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="contenido">
+    <section class="mb-4">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="card bg-success-subtle shadow-sm">
+            <div class="card-body">
+              <h2 class="card-title">¿Por qué usar Ecobite para reciclar alimentos?</h2>
+              <p class="card-text">Ecobite conecta comercios con excedentes de alimentos y consumidores locales dispuestos a comprarlos a precio reducido. Esta guía explica paso a paso cómo transformar mermas en ventas, cómo asegurar la inocuidad de los alimentos y cómo integrar la gestión de residuos orgánicos dentro del flujo operativo del local.</p>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <h3>Visión general del flujo en la app</h3>
+            <ol>
+              <li><strong>Registro del comercio:</strong> el local solicita un perfil y configura su punto de venta (horarios de cierre, tipos de producto, etc).</li>
+              <li><strong>Publicación :</strong> Ecobite recomienda la aplicación descuento según proximidad de consumo preferente y volumen (ej. 50% a 24h, 70% a 12h).</li>
+              <li><strong>Compra por consumidores:</strong> los usuarios localizan "packs sorpresa" o artículos individuales y pagan en la app</li>
+              <li><strong>Retiro:</strong> el usuario retira en el local en el horario de atencion.</li>
+              <li><strong>Registro de trazabilidad:</strong> el comercio adjunta una etiqueta digital de estado (A punto de expirar / Abierto / Cerrado , etc) y una breve descripción.</li>
+            </ol>
+          </div>
+
+          <div class="mt-3">
+            <h3>Cómo reciclar alimentos con Ecobite — Guía para comercios</h3>
+            <p class="mb-1"><strong>Paso 1 — Preparar los productos:</strong> inspeccione y clasifique cada producto en <em>Apto para venta</em>, <em>Rebajado</em> (segunda selección) o <em>Compostable/No vendible</em>. Use la lista de verificación sanitaria que aparece abajo.</p>
+            <p class="mb-1"><strong>Paso 2 — Crear publicación rápida:</strong> desde el panel "Merma rápida", seleccione el producto, suba una foto, indique peso/porciones, estado, descuento y horario de retiro.</p>
+            <p class="mb-1"><strong>Paso 3 — Etiqueta digital y física:</strong> genere la etiqueta digital automática (QR) que queda vinculada a la publicación. Imprima la etiqueta física para pegar en el producto (plantilla incluida en Anexos).</p>
+            <p class="mb-1"><strong>Paso 4 — Gestionar entregas:</strong> cuando un usuario compra, confirme el pago y reserve el producto. Tenga un corte de 30 minutos para preparar pedidos y evitar incumplimientos.</p>
+            <p class="mb-1"><strong>Paso 5 — Registrar destino final:</strong> si el producto no se vendió y es compostable, marque "Compost" en la app para contabilizar reducción de residuos.</p>
+
+            <div class="alert alert-light mt-3" role="alert">
+              <h5>Lista de verificación sanitaria (resumen)</h5>
+              <ul>
+                <li>Producto dentro de su fecha de consumo preferente (no vencido).</li>
+                <li>Sin signos visibles de deterioro microbiológico (olor fuerte, moho extendido, texturas anormales).</li>
+                <li>Temperatura adecuada según tipo (refrigerado/ambiental).</li>
+                <li>Manipulación con utensilios limpios y personal con higiene básica.</li>
+              </ul>
+              <small class="text-muted">Consulte siempre la normativa local y las guías de ACHIPIA (Agencia Chilena Para la Inocuidad y Calidad Alimentaria) si tiene dudas sobre un producto.</small>
+            </div>
+
+            <h5 class="mt-3">Etiquetado (plantilla rápida)</h5>
+            <pre class="code">Nombre: Pan integral (x6)
+Estado: Apto (Rebajado)
+Fecha preferente: 2025-12-12
+Instrucciones: Consumir en 24h, conservar en bolsa sellada
+          </div>
+
+        
+
+          <div class="mt-4">
+            <h3>Métricas y reportes en la app (qué registrar)</h3>
+            <p>Para medir impacto y cumplimiento normativo, Ecobite genera reportes automáticos de:</p>
+            <ul>
+              <li>Kg de alimentos vendidos como rescatados por periodo.</li>
+              <li>Reducción estimada de CO₂ (factor por kg rescate).</li>
+              <li>Órdenes completadas / canceladas y tiempo medio de retiro.</li>
+              <li>Donaciones y biorresiduos enviados a compostaje.</li>
+            </ul>
+          </div>
+
+          <div class="mt-4">
+            <h3>Preguntas frecuentes (FAQ)</h3>
+            <div class="accordion" id="faq">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="faq1">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq1">¿Es seguro comprar alimentos rebajados?</button>
+                </h2>
+                <div id="collapseFaq1" class="accordion-collapse collapse" data-bs-parent="#faq">
+                  <div class="accordion-body">Sí, siempre que el comercio haya clasificado el producto como <em>Apto</em> y la etiqueta indique las condiciones. La app exige que el comercio siga una lista de verificación sanitaria al publicar.</div>
+                </div>
+              </div>
+
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="faq2">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFaq2">¿Qué hago si el producto llega en mal estado?</button>
+                </h2>
+                <div id="collapseFaq2" class="accordion-collapse collapse" data-bs-parent="#faq">
+                  <div class="accordion-body">Reporta el incidente en la app (botón "Incidente") y solicita reembolso o crédito. La reputación del comercio se verá afectada si hay reportes repetidos.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-md-4">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Resumen rápido</h5>
+              <p class="mb-1"><span class="legend-dot" style="background:#2b8a3e"></span><strong>Orgánicos:</strong> Compostaje / bioresiduo</p>
+              <p class="mb-1"><span class="legend-dot" style="background:#0d6efd"></span><strong>Reciclables:</strong> Envases limpios</p>
+              <p class="mb-1"><span class="legend-dot" style="background:#6c757d"></span><strong>No reciclable:</strong> Desecho general</p>
+              <hr>
+              <p class="small text-muted">Incluye plantillas de etiqueta QR y checklist para publicar rápido desde el panel del comercio.</p>
+              <a class="btn btn-outline-primary mt-2" href="#etiquetas">Ver plantillas</a>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-body">
+              <h6>Checklist rápido para publicar</h6>
+              <ul>
+                <li>¿Producto apto? ✅</li>
+                <li>Foto clara? ✅</li>
+                <li>Descuento configurado? ✅</li>
+                <li>Horario de retiro establecido? ✅</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="card mt-3">
+            <div class="card-body">
+              <h6>Contacto legal y sanitario</h6>
+              <p class="small mb-0">Revisa la normativa local y la guía ACHIPIA antes de publicar productos preparados.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="etiquetas" class="mb-4">
+      <h3>Plantillas y recursos</h3>
+      <p>Copie estas plantillas para pegarlas en su local o imprimir etiquetas rápidas.</p>
+      <h5>Etiqueta física (A6 sugerido)</h5>
+      <pre class="code">Nombre: ____________________
+Estado: ☐ Apto ☐ Rebajado ☐ No vendible
+Fecha: ________  Hora de retiro: ________
+Instrucciones: ________________________
+QR: ________________________</pre>
+
+      <h5 class="mt-3">Proximamente!! - Texto de notificación push (plantilla)</h5>
+      <pre class="code">¡Oferta flash en {nombre_local}! Pack sorpresa de {categoria} con {descuento}% hasta hoy {hora}. Reserva en Ecobite y retíralo antes de las {hora_cierre}.</pre>
+
+    </section>
+
+    <footer class="py-4 mt-4 border-top">
+      <div class="container d-flex justify-content-between">
+        <div>
+          <small class="text-white">Guía generada por Ecobite — Adaptar según normativa local y actualizaciones sanitarias.</small>
+        </div>
+        <div>
+          <small class="text-muted">Versión: 2025.12 — San Bernardo</small>
+        </div>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Panel Admin - Ecobite{% endblock %}
+
+{% block content %}
+{% load static %}
+{% include "components/navbar.html" %}
+<div class="container py-5">
+    <h2 class="fw-bold mb-4">Bienvenido, {{ user.name }} {{user.lastname}} 👋</h2>
+
+    <div class="row g-4">
+
+        <!-- Card: Registrar negocio -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Negocios</h5>
+                    <p class="card-text small text-muted">Registra un nuevos negocios al sistema</p>
+                    <a href="{% url "NewStore" %}" class="btn btn-secondary w-100">Negocios</a>
+                </div>
+            </div>
+        </div>
+                <!-- Card: Registrar alimentos -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Control usuarios</h5>
+                    <p class="card-text small text-muted">Edita o desactiva perfiles de tienda</p>
+                    <div class="d-flex flex-column justify-content-center">
+                        <a href="{% url "admin_store_list" %}" class="btn btn-primary">Tiendas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Dashboard -->
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Dashboard</h5>
+                    <p class="card-text small text-muted">Muestra datos relevantes para el negocio</p>
+                    <a href="{% url "dashboard" %}" class="btn btn-success w-100">Dashboard Administrador</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

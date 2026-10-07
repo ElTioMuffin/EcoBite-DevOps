@@ -1,0 +1,62 @@
+[
+    {
+        "model": "Store.testcards",
+        "pk": 1,
+        "fields": {
+            "number": "4000 0000 0000 0001",
+            "expirydate": "09/29",
+            "cvv": "123",
+            "scenario": "success"
+        }
+    },
+    {
+        "model": "Store.testcards",
+        "pk": 2,
+        "fields": {
+            "number": "4000 0000 0000 0002",
+            "expirydate": "06/27",
+            "cvv": "456",
+            "scenario": "insufficient_funds"
+        }
+    },
+    {
+        "model": "Store.testcards",
+        "pk": 3,
+        "fields": {
+            "number": "4000 0000 0000 0003",
+            "expirydate": "12/26",
+            "cvv": "699",
+            "scenario": "declined"
+        }
+    },
+    {
+        "model": "Store.testcards",
+        "pk": 4,
+        "fields": {
+            "number": "4000 0000 0000 0004",
+            "expirydate": "11/25",
+            "cvv": "133",
+            "scenario": "expired_card"
+        }
+    },
+    {
+        "model": "Store.testcards",
+        "pk": 5,
+        "fields": {
+            "number": "4000 0000 0000 0005",
+            "expirydate": "11/29",
+            "cvv": "789",
+            "scenario": "invalid_card"
+        }
+    },
+    {
+        "model": "Store.testcards",
+        "pk": 6,
+        "fields": {
+            "number": "4000 0000 0000 0006",
+            "expirydate": "09/28",
+            "cvv": "420",
+            "scenario": "processing_error"
+        }
+    }
+]

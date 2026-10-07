@@ -1,0 +1,337 @@
+{% extends "admin/base_site.html" %}
+
+{% block extrastyle %}
+<style>
+    .dashboard-container {
+        padding: 30px;
+        background-color: #f8f9fa;
+    }
+    .section-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+    .stats-card {
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2 text-primary"></i> Panel de Control
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="dashboardNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <i class="bi bi-house-door"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders_report' %}">
+                            <i class="bi bi-cart-check"></i> Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products_report' %}">
+                            <i class="bi bi-box-seam"></i> Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'stores_report' %}">
+                            <i class="bi bi-shop"></i> Tiendas
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+<div class="container mt-2">
+    <h1 class="mb-4">
+        <i class="bi bi-shop"></i> Reporte de Tiendas
+    </h1>
+
+    <!-- Estadísticas Generales -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="stats-card bg-primary text-white">
+                <h6>Total Tiendas</h6>
+                <h2>{{ total_stores }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card bg-success text-white">
+                <h6>Ingresos Totales</h6>
+                <h2>${{ total_revenue_all|floatformat:0 }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card bg-info text-white">
+                <h6>Promedio Productos/Tienda</h6>
+                <h2>{{ avg_products_per_store }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card my-2 section-card">
+        <div class="card-body">
+            <h5><i class="bi bi-funnel"></i> Filtros</h5>
+            <form method="get" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Región</label>
+                    <select name="region" class="form-select">
+                        <option value="">Todas las regiones</option>
+                        {% for region in regions %}
+                        <option value="{{ region.id }}" {% if selected_region == region.id|stringformat:"s" %}selected{% endif %}>
+                            {{ region.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Tipo de Tienda</label>
+                    <select name="store_type" class="form-select">
+                        <option value="">Todos los tipos</option>
+                        {% for type in store_types %}
+                        <option value="{{ type.id }}" {% if selected_store_type == type.id|stringformat:"s" %}selected{% endif %}>
+                            {{ type.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filtrar
+                    </button>
+                    <a href="{% url 'stores_report' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Todas las Tiendas -->
+    <div class="card my-2 section-card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-building"></i> Listado de Tiendas con Métricas</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tienda</th>
+                            <th>Tipo</th>
+                            <th>Región</th>
+                            <th class="text-center">Total Productos</th>
+                            <th class="text-center">En Stock</th>
+                            <th class="text-center">Sin Stock</th>
+                            <th class="text-center">Ventas</th>
+                            <th class="text-end">Ingresos</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for store in stores %}
+                        <tr>
+                            <td>
+                                <strong>{{ store.name }}</strong>
+                                <br>
+                                <small class="text-muted">{{ store.rut }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{ store.storetype.name }}</span>
+                            </td>
+                            <td>{{ store.region.name }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-primary rounded-pill">{{ store.total_products|default:0 }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-success rounded-pill">{{ store.active_products|default:0 }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-danger rounded-pill">{{ store.out_of_stock_products|default:0 }}</span>
+                            </td>
+                            <td class="text-center">{{ store.total_sales|default:0 }}</td>
+                            <td class="text-end fw-bold text-success">
+                                ${{ store.revenue|default:0|floatformat:0 }}
+                            </td>
+                            <td class="text-center">
+                                <a href="{% url 'store_detail' store.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> Ver
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center py-4 text-muted">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <p>No hay tiendas que coincidan con los filtros</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Tiendas -->
+    <div class="row my-2">
+        <div class="col-md-6">
+            <div class="card section-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-trophy"></i> Top 10 por Ingresos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tienda</th>
+                                    <th class="text-end">Ingresos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for store in top_stores_by_revenue %}
+                                <tr>
+                                    <td><strong>{{ forloop.counter }}</strong></td>
+                                    <td>{{ store.name }}</td>
+                                    <td class="text-end text-success fw-bold">
+                                        ${{ store.revenue|default:0|floatformat:0 }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card section-card">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0"><i class="bi bi-box-seam"></i> Top 10 por Productos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tienda</th>
+                                    <th class="text-end">Productos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for store in top_stores_by_products %}
+                                <tr>
+                                    <td><strong>{{ forloop.counter }}</strong></td>
+                                    <td>{{ store.name }}</td>
+                                    <td class="text-end">
+                                        <span class="badge bg-primary rounded-pill">
+                                            {{ store.total_products|default:0 }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Distribución -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card section-card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Distribución por Región</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Región</th>
+                                    <th class="text-center">Tiendas</th>
+                                    <th class="text-end">Ingresos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for region in stores_by_region %}
+                                <tr>
+                                    <td>{{ region.name }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary rounded-pill">{{ region.store_count }}</span>
+                                    </td>
+                                    <td class="text-end text-success">
+                                        ${{ region.total_revenue|default:0|floatformat:0 }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card section-card">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Distribución por Tipo</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th class="text-center">Tiendas</th>
+                                    <th class="text-end">Ingresos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for type in stores_by_type %}
+                                <tr>
+                                    <td>{{ type.name }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary rounded-pill">{{ type.store_count }}</span>
+                                    </td>
+                                    <td class="text-end text-success">
+                                        ${{ type.total_revenue|default:0|floatformat:0 }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

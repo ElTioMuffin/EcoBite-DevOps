@@ -1,0 +1,634 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block extrastyle %}
+<style>
+    .dashboard-container {
+        padding: 30px;
+        background-color: #f8f9fa;
+    }
+    
+    .metric-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+    
+    .metric-icon {
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    
+    .metric-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 30px 0 20px;
+        color: #2c3e50;
+        border-left: 4px solid #0d6efd;
+        padding-left: 15px;
+    }
+    
+    .table-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    .table thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .table thead th {
+        border: none;
+        padding: 15px;
+        font-weight: 600;
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.2s;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .badge-custom {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2 text-primary"></i> Panel de Control
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="dashboardNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'dashboard' %}">
+                            <i class="bi bi-house-door"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders_report' %}">
+                            <i class="bi bi-cart-check"></i> Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products_report' %}">
+                            <i class="bi bi-box-seam"></i> Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stores_report' %}">
+                            <i class="bi bi-shop"></i> Tiendas
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-5 fw-bold">
+            <i class="bi bi-speedometer2"></i> Panel de Control
+        </h1>
+        <div class="text-muted">
+            <i class="bi bi-calendar3"> {% now "d/m/Y" %}</i>
+        </div>
+        <div>
+            <a href="{% url 'export_csv' %}" class="btn btn-success">
+                <i class="bi bi-filetype-csv"></i> Descargar CSV
+            </a>
+
+            <a href="{% url 'Landing' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+        </div>
+
+    </div>
+    
+    <!-- Métricas de Ingresos -->
+    <h2 class="section-title">
+        <i class="bi bi-cash-stack"></i> Métricas de Ingresos
+    </h2>
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-currency-dollar metric-icon text-success"></i>
+                    <div class="metric-label">Ingresos Totales</div>
+                    <div class="metric-value text-success">${{ total_revenue|floatformat:0 }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-graph-up-arrow metric-icon text-primary"></i>
+                    <div class="metric-label">Últimos 30 Días</div>
+                    <div class="metric-value text-primary">${{ revenue_last_30_days|floatformat:0 }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-calendar-week metric-icon text-info"></i>
+                    <div class="metric-label">Últimos 7 Días</div>
+                    <div class="metric-value text-info">${{ revenue_last_7_days|floatformat:0 }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-calculator metric-icon text-secondary"></i>
+                    <div class="metric-label">Valor Promedio</div>
+                    <div class="metric-value text-secondary">${{ avg_order_value|floatformat:0 }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas de Pedidos -->
+    <h2 class="section-title">
+        <i class="bi bi-cart-check"></i> Métricas de Pedidos
+    </h2>
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-box-seam metric-icon text-dark"></i>
+                    <div class="metric-label">Total Pedidos</div>
+                    <div class="metric-value">{{ total_orders }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-check-circle metric-icon text-success"></i>
+                    <div class="metric-label">Pagados</div>
+                    <div class="metric-value text-success">{{ paid_orders }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-hourglass-split metric-icon text-warning"></i>
+                    <div class="metric-label">Pendientes</div>
+                    <div class="metric-value text-warning">{{ pending_orders }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-x-circle metric-icon text-danger"></i>
+                    <div class="metric-label">Fallidos</div>
+                    <div class="metric-value text-danger">{{ failed_orders }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card metric-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="metric-label">Tasa de Éxito</div>
+                            <div class="metric-value text-success">{{ success_rate | unlocalize }}%</div>
+                        </div>
+                        <div class="progress" style="width: 60%; height: 30px;">
+                            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" 
+                                 style="width: {{ success_rate | unlocalize }}%;" 
+                                 aria-valuenow="{{ success_rate | unlocalize }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ success_rate }}%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas de Productos -->
+    <h2 class="section-title">
+        <i class="bi bi-box"></i> Métricas de Productos
+    </h2>
+    <div class="row g-4 mb-5">
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-boxes metric-icon text-primary"></i>
+                    <div class="metric-label">Total Productos</div>
+                    <div class="metric-value">{{ total_products }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-check2-square metric-icon text-success"></i>
+                    <div class="metric-label">En Stock</div>
+                    <div class="metric-value text-success">{{ products_in_stock }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-exclamation-triangle metric-icon text-danger"></i>
+                    <div class="metric-label">Sin Stock</div>
+                    <div class="metric-value text-danger">{{ products_out_of_stock }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-tag metric-icon text-warning"></i>
+                    <div class="metric-label">En Oferta</div>
+                    <div class="metric-value text-warning">{{ products_on_sale }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="card metric-card">
+                <div class="card-body">
+                    <div class="alert alert-warning d-flex align-items-center mb-0" role="alert">
+                        <i class="bi bi-clock-history fs-4 me-3"></i>
+                        <div>
+                            <strong>Productos por Vencer:</strong> 
+                            <span class="fs-5 ms-2">{{ products_expiring_soon }}</span> productos vencen en los próximos 30 días
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Métricas de Tiendas -->
+    <h2 class="section-title">
+        <i class="bi bi-shop"></i> Métricas de Tiendas
+    </h2>
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card metric-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-building metric-icon text-primary"></i>
+                    <div class="metric-label">Total Tiendas</div>
+                    <div class="metric-value text-primary">{{ total_stores }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card table-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-diagram-3"></i> Tiendas por Tipo</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for type in stores_by_type %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ type.name }}</span>
+                            <span class="badge bg-primary rounded-pill">{{ type.store_count }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card table-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-geo-alt"></i> Tiendas por Región</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for region in stores_by_region %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ region.name }}</span>
+                            <span class="badge bg-success rounded-pill">{{ region.store_count }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de Pedidos por Día -->
+    <h2 class="section-title">
+        <i class="bi bi-graph-up"></i> Tendencia de Pedidos (Últimos 30 Días)
+    </h2>
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card table-card">
+                <div class="card-body">
+                    <canvas id="ordersChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Productos -->
+    <h2 class="section-title">
+        <i class="bi bi-star-fill"></i> Top 10 Productos Más Vendidos
+    </h2>
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card table-card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th><i class="bi bi-hash"></i></th>
+                                    <th>Producto</th>
+                                    <th>Tienda</th>
+                                    <th class="text-center">Cantidad Vendida</th>
+                                    <th class="text-end">Ingresos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in top_products %}
+                                <tr>
+                                    <td><strong>{{ forloop.counter }}</strong></td>
+                                    <td>{{ product.product__name }}</td>
+                                    <td>{{ product.product__store__name }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info rounded-pill">{{ product.total_sold }}</span>
+                                    </td>
+                                    <td class="text-end fw-bold text-success">${{ product.revenue|floatformat:0 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pedidos Recientes -->
+    <h2 class="section-title">
+        <i class="bi bi-clock-history"></i> Pedidos Recientes
+    </h2>
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card table-card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID Pedido</th>
+                                    <th>Usuario</th>
+                                    <th class="text-end">Total</th>
+                                    <th class="text-center">Estado</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td><code>{{ order.id|truncatechars:13 }}</code></td>
+                                    <td>
+                                        {% if order.user %}
+                                            <i class="bi bi-person-circle"></i> {{ order.user.email }}
+                                        {% else %}
+                                            <span class="text-muted">Sin usuario</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end fw-bold">${{ order.total|floatformat:0 }}</td>
+                                    <td class="text-center">
+                                        {% if order.paymentStatus == 'paid' %}
+                                            <span class="badge badge-custom bg-success">
+                                                <i class="bi bi-check-circle"></i> Pagado
+                                            </span>
+                                        {% elif order.paymentStatus == 'pending' %}
+                                            <span class="badge badge-custom bg-warning text-dark">
+                                                <i class="bi bi-hourglass-split"></i> Pendiente
+                                            </span>
+                                        {% elif order.paymentStatus == 'failed' %}
+                                            <span class="badge badge-custom bg-danger">
+                                                <i class="bi bi-x-circle"></i> Fallido
+                                            </span>
+                                        {% else %}
+                                            <span class="badge badge-custom bg-secondary">
+                                                <i class="bi bi-dash-circle"></i> Cancelado
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <i class="bi bi-calendar3"></i> {{ order.created_at|date:"d/m/Y H:i" }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Escenarios de Pago -->
+    {% if payment_scenarios %}
+    <h2 class="section-title">
+        <i class="bi bi-credit-card"></i> Análisis de Escenarios de Pago
+    </h2>
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card table-card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Escenario</th>
+                                    <th class="text-center">Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for scenario in payment_scenarios %}
+                                <tr>
+                                    <td>
+                                    {% if scenario.paymentScenario == 'success'%}Exito{% endif %}
+                                    {% if scenario.paymentScenario == 'declined'%}Fallido{% endif %}
+                                    {% if scenario.paymentScenario == 'insufficient_funds'%}Fondos insuficientes{% endif %}
+                                    </td>
+                                    
+                                    <td class="text-center">
+                                        <span class="badge bg-primary rounded-pill">{{ scenario.count }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card table-card">
+                <div class="card-body">
+                    <canvas id="scenariosChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Gráfico de Pedidos por Día
+    const ordersData = {{ orders_by_day|safe }};
+    const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+    new Chart(ordersCtx, {
+        type: 'line',
+        data: {
+            labels: ordersData.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleDateString('es-CL');
+            }),
+            datasets: [{
+                label: 'Cantidad de Pedidos',
+                data: ordersData.map(item => item.count),
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Ingresos',
+                data: ordersData.map(item => item.revenue || 0),
+                borderColor: 'rgb(153, 102, 255)',
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                tension: 0.4,
+                fill: true,
+                yAxisID: 'y1'
+            }]
+        },
+        options: {
+            responsive: true,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Pedidos e Ingresos Diarios'
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Pedidos'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: 'Ingresos ($)'
+                    },
+                    grid: {
+                        drawOnChartArea: false,
+                    }
+                }
+            }
+        }
+    });
+
+    // Gráfico de Escenarios de Pago
+    {% if payment_scenarios %}
+    const scenariosData = [
+        {% for scenario in payment_scenarios %}
+            {% if scenario.paymentScenario == 'success'%}{ scenario: 'Exito', count: {{ scenario.count }} },{% endif %}
+            {% if scenario.paymentScenario == 'declined'%}{ scenario: 'Fallido', count: {{ scenario.count }} },{% endif %}
+            {% if scenario.paymentScenario == 'insufficient_funds'%}{ scenario: 'Fondos Insuficientes', count: {{ scenario.count }} },{% endif %}
+        {% endfor %}
+    ];
+
+    const scenariosCtx = document.getElementById('scenariosChart').getContext('2d');
+    new Chart(scenariosCtx, {
+        type: 'doughnut',
+        data: {
+            labels: scenariosData.map(item => item.scenario),
+            datasets: [{
+                data: scenariosData.map(item => item.count),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)'
+                ],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                },
+                title: {
+                    display: true,
+                    text: 'Distribución de Escenarios'
+                }
+            }
+        }
+    });
+    {% endif %}
+</script>
+{% endblock %}
