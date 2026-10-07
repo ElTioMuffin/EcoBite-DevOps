@@ -1,0 +1,57 @@
+[
+    {
+      "model": "Store.storetype",
+      "pk": 1,
+      "fields": {
+        "name": "Cafetería",
+        "description": "Local dedicado a la venta de café, té y productos de panadería/pastelería",
+        "categorycode": "CAF"
+      }
+    },
+    {
+      "model": "Store.storetype",
+      "pk": 2,
+      "fields": {
+        "name": "Restaurante",
+        "description": "Local que ofrece comidas preparadas y servicio de mesa",
+        "categorycode": "REST"
+      }
+    },
+    {
+      "model": "Store.storetype",
+      "pk": 3,
+      "fields": {
+        "name": "Panadería",
+        "description": "Venta de pan, masas, pasteles y productos horneados",
+        "categorycode": "PAN"
+      }
+    },
+    {
+      "model": "Store.storetype",
+      "pk": 4,
+      "fields": {
+        "name": "Supermercado",
+        "description": "Tienda donde se venden productos de consumo masivo",
+        "categorycode": "SUP"
+      }
+    },
+    {
+      "model": "Store.storetype",
+      "pk": 5,
+      "fields": {
+        "name": "Frutería",
+        "description": "Venta de frutas y verduras frescas",
+        "categorycode": "FRU"
+      }
+    },
+    {
+      "model": "Store.storetype",
+      "pk": 6,
+      "fields": {
+        "name": "Tienda Natural",
+        "description": "Venta de productos orgánicos o saludables",
+        "categorycode": "NAT"
+      }
+    }
+  ]
+  
