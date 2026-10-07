@@ -1,0 +1,155 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2 text-primary"></i> Panel de Control
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="dashboardNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <i class="bi bi-house-door"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders_report' %}">
+                            <i class="bi bi-cart-check"></i> Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'products_report' %}">
+                            <i class="bi bi-box-seam"></i> Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stores_report' %}">
+                            <i class="bi bi-shop"></i> Tiendas
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Reporte de Productos</h1>
+        <a href="{% url "export_products_csv" %}" class="btn btn-success">
+            <i class="bi bi-filetype-csv"></i> Exportar CSV
+        </a>
+    </div>
+    
+    <!-- Productos con bajo stock -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning">
+            <h5 class="mb-0">⚠️ Productos con Bajo Stock (≤{{ low_stock_threshold }})</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Tienda</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in low_stock_products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.store.name }}</td>
+                            <td><span class="badge bg-warning">{{ product.quantity }}</span></td>
+                            <td>{{ product.state.name }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No hay productos con bajo stock</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Productos por vencer -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">📅 Productos por Vencer (Próximos 30 días)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Tienda</th>
+                            <th>Stock</th>
+                            <th>Fecha de Vencimiento</th>
+                            <th>Días Restantes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in expiring_products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.store.name }}</td>
+                            <td>{{ product.quantity }}</td>
+                            <td>{{ product.expdate|date:"d/m/Y" }}</td>
+                            <td>
+                                {% with days=product.expdate|timeuntil %}
+                                <span class="badge bg-danger">{{ days }}</span>
+                                {% endwith %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center">No hay productos por vencer</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Más vendidos -->
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">⭐ Top 20 Productos Más Vendidos</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Producto</th>
+                            <th>Tienda</th>
+                            <th>Ventas</th>
+                            <th>Ingresos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in best_sellers %}
+                        <tr>
+                            <td><strong>{{ forloop.counter }}</strong></td>
+                            <td>{{ product.product__name }}</td>
+                            <td>{{ product.product__store__name }}</td>
+                            <td>{{ product.total_quantity }}</td>
+                            <td class="text-success fw-bold">${{ product.total_revenue|floatformat:0 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
