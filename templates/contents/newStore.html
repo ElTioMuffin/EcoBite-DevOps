@@ -1,0 +1,115 @@
+<div class="container text-center">
+    <div class="alert alert-info display-4 mt-2">Añadir un Comercio</div>
+    <div class="text-start">
+        <a class="btn btn-outline-success justify-start" href="{% url "Landing" %}">
+            <i class="bi bi-arrow-return-left"> Volver </i>
+        </a>
+    </div>
+    <div class="col">
+        <form method="POST" enctype="multipart/form-data">
+            <table class="table container">
+            {{form.media}}
+            {{ form.non_field_errors }}
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-floating my-2 fieldWrapper">
+                {{ field }}
+                <label for="{{ field.id_for_label }}">{{ field.label}}</label>
+                <div>{{ field.errors }}</div>
+                </div>
+            {% endfor %}
+            </table>
+            <button type="submit" class="btn btn-success">Añadir</button>
+        </form>
+    </div>
+</div>
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/newStore.css' %}">
+<script>
+function formatPhone(digits) {
+    digits = digits.replace(/\s+/g, "");
+
+    if (digits.startsWith("+56")) {
+        if (digits.length >= 12) {
+            let prefix = "+56";               // +56
+            let body = digits.slice(3);       // remove +56
+            return `${prefix} ${body[0]} ${body.slice(1,5)} ${body.slice(5,9)}`;
+        }
+        return digits;
+    }
+    if (digits.startsWith("9")) {
+        if (digits.length >= 9) {
+            return `${digits[0]} ${digits.slice(1,5)} ${digits.slice(5,9)}`;
+        }
+        return digits;
+    } if (digits.length >= 8) {
+        return `${digits.slice(0,4)} ${digits.slice(4,8)}`;
+    }
+
+    return digits;
+}
+//Formatear el campo de teléfono mientras se escribe
+document.getElementById("id_phone").addEventListener("input", function(e) {
+    let input = this;
+
+    // Raw value before formatting
+    let raw = input.value;
+
+    // Cursor original position
+    let pos = input.selectionStart;
+
+    // Remove spaces
+    let digits = raw.replace(/\s+/g, "");
+
+    // Format
+    let formatted = formatPhone(digits);
+
+    // Count added/removed spaces
+    let beforeSpaces = (raw.match(/\s/g) || []).length;
+    let afterSpaces = (formatted.match(/\s/g) || []).length;
+    let diff = afterSpaces - beforeSpaces;
+
+    // Update value
+    input.value = formatted;
+
+    // Fix cursor position
+    let newPos = pos + diff;
+    input.setSelectionRange(newPos, newPos);
+});
+
+function formatRut(value) {
+    // Clean: remove dots and dash
+    value = value.replace(/\./g, "").replace(/-/g, "");
+
+    // Uppercase DV
+    value = value.toUpperCase();
+
+    // If too short, return as is
+    if (value.length <= 1) {
+        return value;
+    }
+
+    // Separate body + DV
+    let body = value.slice(0, -1);
+    let dv = value.slice(-1);
+
+    // Add dots to body
+    let formatted = "";
+    while (body.length > 3) {
+        formatted = "." + body.slice(-3) + formatted;
+        body = body.slice(0, -3);
+    }
+    formatted = body + formatted;
+
+    return formatted + "-" + dv;
+}
+
+document.getElementById("id_rut").addEventListener("input", function() {
+    this.value = formatRut(this.value);
+});
+document.getElementById("id_rutowner").addEventListener("input", function() {
+    this.value = formatRut(this.value);
+});
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
