@@ -1,0 +1,377 @@
+{% extends "admin/base_site.html" %}
+{% block extrastyle %}
+<style>
+    .dashboard-container {
+        padding: 30px;
+        background-color: #f8f9fa;
+    }
+    .detail-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+    .info-row {
+        padding: 12px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+    .stat-box {
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    .store-logo {
+        max-width: 150px;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+</style>{% endblock  %}
+{% block content %}
+<div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">
+                <i class="bi bi-speedometer2 text-primary"></i> Panel de Control
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="dashboardNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard' %}">
+                            <i class="bi bi-house-door"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'orders_report' %}">
+                            <i class="bi bi-cart-check"></i> Pedidos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products_report' %}">
+                            <i class="bi bi-box-seam"></i> Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'stores_report' %}">
+                            <i class="bi bi-shop"></i> Tiendas
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'stores_report' %}">Tiendas</a></li>
+            <li class="breadcrumb-item active">{{ store.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>
+            <i class="bi bi-shop"></i> {{ store.name }}
+        </h1>
+        <a href="{% url 'stores_report' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <!-- Estadísticas de la Tienda -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-box bg-primary text-white">
+                <i class="bi bi-box-seam fs-2"></i>
+                <h6 class="mt-2">Total Productos</h6>
+                <h3>{{ product_stats.total }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box bg-success text-white">
+                <i class="bi bi-check-circle fs-2"></i>
+                <h6 class="mt-2">En Stock</h6>
+                <h3>{{ product_stats.in_stock }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box bg-danger text-white">
+                <i class="bi bi-x-circle fs-2"></i>
+                <h6 class="mt-2">Sin Stock</h6>
+                <h3>{{ product_stats.out_of_stock }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box bg-info text-white">
+                <i class="bi bi-currency-dollar fs-2"></i>
+                <h6 class="mt-2">Ingresos Totales</h6>
+                <h3>${{ total_revenue|floatformat:0 }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información de la Tienda -->
+        <div class="col-md-6">
+            <div class="card detail-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información de la Tienda</h5>
+                </div>
+                <div class="card-body">
+                    {% if store.logo %}
+                    <div class="text-center mb-3">
+                        <img src="{{ store.logo.url }}" alt="{{ store.name }}" class="store-logo img-fluid" style="max-height: 150px;">
+                    </div>
+                    {% endif %}
+                    
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Razón Social:</div>
+                            <div class="col-7">{{ store.name }}</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">RUT:</div>
+                            <div class="col-7"><code>{{ store.rut }}</code></div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Tipo de Tienda:</div>
+                            <div class="col-7">
+                                <span class="badge bg-info">{{ store.storetype.name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Dirección:</div>
+                            <div class="col-7">{{ store.address }}</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Comuna:</div>
+                            <div class="col-7">{{ store.state.name }}</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Región:</div>
+                            <div class="col-7">{{ store.region.name }}</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Teléfono:</div>
+                            <div class="col-7">
+                                <a href="tel:{{ store.phone }}">{{ store.phone }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Horario:</div>
+                            <div class="col-7">
+                                {{ store.openhr|date:"H:i" }} - {{ store.closehr|date:"H:i" }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Propietario -->
+        <div class="col-md-6">
+            <div class="card detail-card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-person"></i> Representante Legal</h5>
+                </div>
+                <div class="card-body">
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Nombre:</div>
+                            <div class="col-7">
+                                {{ store.ownername }} 
+                                {% if store.ownerlastname %}{{ store.ownerlastname }}{% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">RUT:</div>
+                            <div class="col-7"><code>{{ store.rutowner }}</code></div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Email:</div>
+                            <div class="col-7">
+                                <a href="mailto:{{ store.emailowner }}">{{ store.emailowner }}</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% if store.owner %}
+                    <div class="info-row">
+                        <div class="row">
+                            <div class="col-5 info-label">Usuario:</div>
+                            <div class="col-7">
+                                <span class="badge bg-primary">{{ store.owner.email }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Productos en Oferta -->
+            <div class="card detail-card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-tag-fill"></i> Productos en Oferta</h5>
+                </div>
+                <div class="card-body">
+                    <div class="stat-box bg-light">
+                        <h2 class="text-warning">{{ product_stats.on_sale }}</h2>
+                        <p class="text-muted mb-0">Productos actualmente en oferta</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Productos de la Tienda -->
+    <div class="card detail-card">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h5 class="mb-0"><i class="bi bi-star-fill"></i> Top 10 Productos Más Vendidos</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th class="text-center">Cantidad Vendida</th>
+                            <th class="text-end">Ingresos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in top_products %}
+                        <tr>
+                            <td><strong>{{ forloop.counter }}</strong></td>
+                            <td>{{ product.product__name }}</td>
+                            <td>${{ product.product__price|floatformat:0 }}</td>
+                            <td class="text-center">
+                                <span class="badge bg-primary rounded-pill">{{ product.total_sold }}</span>
+                            </td>
+                            <td class="text-end text-success fw-bold">
+                                ${{ product.revenue|floatformat:0 }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-3">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <p>Esta tienda aún no tiene ventas registradas</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Listado de Productos -->
+    <div class="card detail-card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-box-seam"></i> Productos de la Tienda 
+                <span class="badge bg-light text-dark ms-2">{{ products|length }} productos</span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th class="text-center">Stock</th>
+                            <th>Estado</th>
+                            <th>Vencimiento</th>
+                            <th class="text-center">Oferta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>
+                                <strong>{{ product.name }}</strong>
+                                {% if product.is_sale %}
+                                    <span class="badge bg-warning text-dark ms-2">Oferta</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if product.is_sale %}
+                                    <del class="text-muted">${{ product.price|floatformat:0 }}</del>
+                                    <span class="text-success fw-bold ms-2">${{ product.sale_price|floatformat:0 }}</span>
+                                {% else %}
+                                    ${{ product.price|floatformat:0 }}
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if product.quantity > 10 %}
+                                    <span class="badge bg-success">{{ product.quantity }}</span>
+                                {% elif product.quantity > 0 %}
+                                    <span class="badge bg-warning text-dark">{{ product.quantity }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Sin Stock</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ product.state.name }}</td>
+                            <td>
+                                <small>{{ product.expdate|date:"d/m/Y" }}</small>
+                            </td>
+                            <td class="text-center">
+                                {% if product.is_sale %}
+                                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                {% else %}
+                                    <i class="bi bi-dash-circle text-muted fs-5"></i>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-3">
+                                <i class="bi bi-inbox fs-1"></i>
+                                <p>Esta tienda no tiene productos registrados</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if products|length >= 50 %}
+            <div class="alert alert-info mt-3">
+                <i class="bi bi-info-circle"></i> 
+                Mostrando los primeros 50 productos. La tienda tiene más productos registrados.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
