@@ -24,10 +24,15 @@ import Store.views as Store
 from Store.views import newProduct
 import cart.views as Cart
 
+def health_check(request):
+    return JsonResponse({"status": "ok"})
+
+
 urlpatterns = [
     #path('admin/', admin.site.urls),
     
     #Login
+    path('health/', health_check, name='health-check'),
     path('', Login.mainPage,name="Main"),
     path('login/auth', Login.auth,name="auth"),
     path('login/', Login.loginView,name="Login"),
